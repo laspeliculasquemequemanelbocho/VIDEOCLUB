@@ -415,6 +415,29 @@ dialog:focus-visible, .dlg-cerrar:focus-visible, .ampliar:focus-visible {
 }
 .afiche { cursor: pointer; }
 .afiche:focus-visible { outline: 3px solid var(--rot); outline-offset: 3px; }
+.dlg-social { padding: 14px 16px 20px; border-top: 1px solid var(--blood); }
+.soc-like { font-family: "Oswald", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--bone); background: var(--blood); border: 2px solid var(--bone); box-shadow: 4px 4px 0 #000; padding: 10px 16px; cursor: pointer; }
+.soc-like:disabled { opacity: .6; cursor: default; }
+.soc-titulo { font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .08em; font-size: 15px; color: var(--mute); margin: 18px 0 8px; font-weight: 600; }
+.soc-critica { border-left: 3px solid var(--blood); padding: 6px 12px; margin: 0 0 10px; background: #120809; }
+.soc-autor { font-family: "Oswald", sans-serif; color: var(--rot); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 4px; }
+.soc-texto { font-family: "Special Elite", monospace; color: var(--bone); margin: 0; font-size: 15px; line-height: 1.5; }
+.soc-vacio { color: var(--mute); font-family: "Special Elite", monospace; margin: 0; }
+.soc-form { display: grid; gap: 8px; margin-top: 12px; }
+.soc-input { width: 100%; background: #120809; color: var(--bone); border: 1px solid var(--blood); padding: 10px; font-family: "Special Elite", monospace; font-size: 15px; }
+.soc-enviar { justify-self: start; background: var(--blood); color: var(--bone); border: 2px solid var(--bone); padding: 10px 18px; font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; }
+.soc-estado { margin: 0; min-height: 1em; color: var(--rot); font-family: "Special Elite", monospace; font-size: 14px; }
+.ranking { padding: 28px 16px 8px; }
+.ranking h2 { font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .1em; color: var(--blood-hi); font-size: 22px; margin: 0 0 12px; }
+.rk-lista { list-style: none; margin: 0; padding: 0; }
+.rk-item { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--blood); font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .06em; color: var(--bone); }
+.rk-n { color: var(--blood-hi); white-space: nowrap; }
+.rk-vacio { color: var(--mute); font-family: "Special Elite", monospace; }
+.soc-quedan { margin: 8px 0 0; color: var(--mute); font-family: "Special Elite", monospace; font-size: 14px; }
+.soc-botones { display: flex; flex-wrap: wrap; gap: 10px; }
+.soc-voto { font-family: "Oswald", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--bone); background: var(--blood); border: 2px solid var(--bone); box-shadow: 4px 4px 0 #000; padding: 10px 16px; cursor: pointer; }
+.soc-voto:disabled { opacity: .6; cursor: default; }
+.soc-odio { background: #2a2a33; }
 </style>
 
 <header>
@@ -457,7 +480,13 @@ dialog:focus-visible, .dlg-cerrar:focus-visible, .ampliar:focus-visible {
   <div class="dlg-reproductor" id="dlg-reproductor"></div>
   <div class="dlg-cuerpo" id="dlg-cuerpo"></div>
   <div class="dlg-pie" id="dlg-pie"></div>
+  <div class="dlg-social" id="dlg-social"></div>
 </dialog>
+
+<section class="ranking" aria-labelledby="rk-titulo">
+  <h2 id="rk-titulo">Ranking de amo y odio</h2>
+  <ol class="rk-lista" id="ranking-lista"></ol>
+</section>
 
 <footer class="pie">
   <p>Hacé clic en cualquier cinta para reproducirla dentro de la página. Si algún link falla, avisame y lo reemplazo.</p>
@@ -501,7 +530,7 @@ const PELIS = [
   { t: "Les Diaboliques", p: "14.jpg", a: 1955, d: "Henri-Georges Clouzot", c: "Policial y noir", u: "https://ok.ru/video/12059143244306", v: "https://ok.ru/video/12059143244306",
     n: "No es de las más conocidas, pero es notable. La vi no hace mucho y me pareció de lo mejor. Clouzot es un autor a tener muy en cuenta. Es un policial oscuro." },
 
-  { t: "12 hombres en pugna", a: 1957, d: "Sidney Lumet", c: "Hollywood", u: "https://ok.ru/video/9032151927427", v: "https://ok.ru/video/9032151927427", p: "15.jpg",
+  { t: "12 hombres en pugna", a: 1957, d: "Sidney Lumet", c: "Hollywood", u: "https://ok.ru/video/15284459473651", v: "https://ok.ru/video/15284459473651", p: "15.jpg",
     n: "Acá sí podés ver 12 hombres en pugna. Te hacés un favor: es enorme. Doce tipos encerrados para dar un veredicto, nunca salen de ese cuarto, y la película es más cine que cualquier otra filmada en veinte locaciones.\n\nLumet tiene varias películas muy buenas y un libro que está genial. Yo lo tengo: cualquier cosa me lo pedís. Una peli bárbara de él es Antes que el diablo sepa que estás muerto (2007). Y también Network, poder que mata (1976).\n\nMirá lo groso de este tipo, que filma desde los años 50 hasta el 2000: siempre que lo ves parece joven e innovador. Es uno de los mejores." },
   { t: "Nickelodeon", p: "16.jpg", a: 1976, d: "Peter Bogdanovich", c: "Hollywood", u: "https://ok.ru/video/4414907681462", v: "https://ok.ru/video/4414907681462",
     n: "Es muy divertida, y tiene que ver con un posible comienzo del cine americano. Me parece otra forma, y muy cinematográfica, de acercarse al origen de una de las mecas del cine." },
@@ -1078,4 +1107,142 @@ armarPista();
 
 inputBuscar.addEventListener("input", render);
 render();
+</script>
+
+<script>
+/* ===== Amo, odio, críticas y ranking ===== */
+/* Pegá acá la URL de tu Apps Script (termina en /exec). Si queda vacía, todo funciona en "modo prueba": se guarda solo en este navegador. */
+const API_URL = "";
+
+const DATOS_LOCALES = "vc_datos_local_v2";
+function datosLocales() {
+  try { return JSON.parse(localStorage.getItem(DATOS_LOCALES)) || { votos: {}, criticas: [] }; }
+  catch (e) { return { votos: {}, criticas: [] }; }
+}
+function guardarLocal(d) { try { localStorage.setItem(DATOS_LOCALES, JSON.stringify(d)); } catch (e) {} }
+
+async function leerDatos() {
+  if (!API_URL) return datosLocales();
+  try { const r = await fetch(API_URL + "?accion=datos"); return await r.json(); }
+  catch (e) { return { votos: {}, criticas: [] }; }
+}
+
+async function enviar(accion, datos) {
+  if (!API_URL) {
+    const d = datosLocales();
+    if (accion === "voto") {
+      const v = d.votos[datos.pelicula] || { amo: 0, odio: 0 };
+      v[datos.tipo] = (v[datos.tipo] || 0) + 1;
+      d.votos[datos.pelicula] = v;
+    }
+    if (accion === "critica") d.criticas.push({ pelicula: datos.pelicula, nombre: datos.nombre, texto: datos.texto, fecha: new Date().toISOString() });
+    guardarLocal(d);
+    return d;
+  }
+  /* text/plain evita el chequeo previo de CORS; el Apps Script lee el JSON igual */
+  const r = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ accion: accion }, datos)) });
+  return await r.json();
+}
+
+let cache = { votos: {}, criticas: [] };
+function votosDe(titulo) { const v = (cache.votos || {})[titulo] || {}; return { amo: v.amo || 0, odio: v.odio || 0 }; }
+
+function nodo(tag, clase, texto) {
+  const e = document.createElement(tag);
+  if (clase) e.className = clase;
+  if (texto != null) e.textContent = texto;
+  return e;
+}
+
+const MAX_VOTOS = 3;
+function votosUsados(titulo) { try { return parseInt(localStorage.getItem("vc_votos_" + titulo), 10) || 0; } catch (e) { return 0; } }
+function sumarVoto(titulo) { try { localStorage.setItem("vc_votos_" + titulo, String(votosUsados(titulo) + 1)); } catch (e) {} }
+
+function renderSocial(p) {
+  const cont = document.getElementById("dlg-social");
+  cont.replaceChildren();
+  const titulo = p.t;
+  const v = votosDe(titulo);
+  const usados = votosUsados(titulo);
+  const quedan = MAX_VOTOS - usados;
+
+  const botones = nodo("div", "soc-botones");
+  const botonAmo = nodo("button", "soc-voto soc-amo", "👍 Amo (" + v.amo + ")");
+  const botonOdio = nodo("button", "soc-voto soc-odio", "👎 Odio (" + v.odio + ")");
+  botonAmo.type = "button"; botonOdio.type = "button";
+  const aviso = nodo("p", "soc-quedan", quedan > 0 ? "Te quedan " + quedan + " de " + MAX_VOTOS + " votos para esta película." : "Ya usaste tus " + MAX_VOTOS + " votos para esta película.");
+  if (quedan <= 0) { botonAmo.disabled = true; botonOdio.disabled = true; }
+  const votar = (tipo) => async () => {
+    sumarVoto(titulo);
+    cache = Object.assign({ votos: {}, criticas: [] }, await enviar("voto", { pelicula: titulo, tipo: tipo }));
+    renderSocial(p);
+    renderRanking();
+  };
+  botonAmo.addEventListener("click", votar("amo"));
+  botonOdio.addEventListener("click", votar("odio"));
+  botones.append(botonAmo, botonOdio);
+  cont.append(botones, aviso);
+
+  const criticas = (cache.criticas || []).filter(c => c.pelicula === titulo);
+  cont.appendChild(nodo("h3", "soc-titulo", "Críticas de los pasajeros (" + criticas.length + ")"));
+  const lista = nodo("div", "soc-lista");
+  if (!criticas.length) lista.appendChild(nodo("p", "soc-vacio", "Todavía no hay críticas. Sé el primero."));
+  criticas.forEach(c => {
+    const item = nodo("article", "soc-critica");
+    item.appendChild(nodo("p", "soc-autor", c.nombre || "Pasajero anónimo"));
+    item.appendChild(nodo("p", "soc-texto", c.texto));
+    lista.appendChild(item);
+  });
+  cont.appendChild(lista);
+
+  const form = nodo("form", "soc-form");
+  const nombre = nodo("input", "soc-input");
+  nombre.type = "text"; nombre.maxLength = 40; nombre.placeholder = "Tu nombre (opcional)";
+  const texto = nodo("textarea", "soc-input");
+  texto.maxLength = 600; texto.rows = 4; texto.placeholder = "Tu crítica (máximo 600 caracteres)"; texto.required = true;
+  const enviarBtn = nodo("button", "soc-enviar", "Enviar crítica");
+  enviarBtn.type = "submit";
+  const estado = nodo("p", "soc-estado");
+  form.append(nombre, texto, enviarBtn, estado);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const t = texto.value.trim();
+    if (!t) return;
+    enviarBtn.disabled = true;
+    estado.textContent = "Enviando…";
+    const res = await enviar("critica", { pelicula: titulo, nombre: nombre.value.trim(), texto: t });
+    if (!API_URL) cache = Object.assign({ votos: {}, criticas: [] }, res);
+    estado.textContent = API_URL
+      ? "¡Gracias! Tu crítica se publica cuando la revisemos."
+      : "¡Listo! (modo prueba: se guarda solo en este navegador)";
+    texto.value = "";
+    enviarBtn.disabled = false;
+    if (!API_URL) renderSocial(p);
+  });
+  cont.appendChild(form);
+}
+
+function renderRanking() {
+  const ol = document.getElementById("ranking-lista");
+  ol.replaceChildren();
+  const top = PELIS.map(p => ({ t: p.t, ...votosDe(p.t) }))
+    .filter(x => x.amo > 0 || x.odio > 0)
+    .sort((a, b) => b.amo - a.amo || a.odio - b.odio)
+    .slice(0, 10);
+  if (!top.length) { ol.appendChild(nodo("li", "rk-vacio", "Todavía no hay votos. ¡Sé el primero!")); return; }
+  top.forEach(x => {
+    const li = nodo("li", "rk-item");
+    li.append(nodo("span", "rk-titulo", x.t), nodo("span", "rk-n", "👍 " + x.amo + "   👎 " + x.odio));
+    ol.appendChild(li);
+  });
+}
+
+/* Cada vez que se abre una película, se arma su bloque de votos y críticas */
+const abrirOriginal = abrirAmpliada;
+abrirAmpliada = function (p, disparador) { abrirOriginal(p, disparador); renderSocial(p); };
+
+leerDatos().then(d => {
+  cache = Object.assign({ votos: {}, criticas: [] }, d);
+  renderRanking();
+});
 </script>
