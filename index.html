@@ -1,7 +1,9 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>Las películas que me queman el bocho</title>
+<meta name="description" content="Videoclub de películas que se viven como experiencias, películas únicas.">
+<meta name="keywords" content="las películas que me queman el bocho, laspeliculasquemequemanelbocho, videoclub, vídeo club, películas de culto">
+<link rel="canonical" href="https://laspeliculasquemequemanelbocho.github.io/VIDEOCLUB/">
 <meta property="og:title" content="Las películas que me queman el bocho">
-<meta name="description" content="Vídeo club: las películas, sus notas y dónde verlas.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vídeo club">
 <meta property="og:title" content="Las películas que me queman el bocho">
@@ -795,6 +797,14 @@ function abrirAmpliada(p, disparador) {
     enlace.textContent = "Si no carga aquí, abrir en " + plataforma(p.u) + " ↗";
     pie.appendChild(enlace);
   }
+  /* Enlace a IMDb: búsqueda por título y año */
+  const imdb = document.createElement("a");
+  imdb.className = "dlg-link-fuente";
+  imdb.href = "https://www.imdb.com/find/?q=" + encodeURIComponent(p.t + " " + p.a);
+  imdb.target = "_blank";
+  imdb.rel = "noopener noreferrer";
+  imdb.textContent = "Ver en IMDb ↗";
+  pie.appendChild(imdb);
   /* Director y año, a la derecha de la misma franja */
   const firma = document.createElement("span");
   firma.className = "dlg-firma";
