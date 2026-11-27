@@ -458,7 +458,8 @@ dialog:focus-visible, .dlg-cerrar:focus-visible, .ampliar:focus-visible {
 <section class="pasarela-wrap" aria-label="Pasarela de cintas">
   <div class="mando">
     <p class="mando-marca">Video Club</p>
-    <button type="button" class="mando-btn" id="pausa" aria-pressed="false">❚❚ Pausa</button>
+    <button type="button" class="mando-btn" id="pausa">❚❚ Pausa</button>
+    <button type="button" class="mando-btn" id="play">▶ Play</button>
     <button type="button" class="mando-btn" id="suerte">La suerte es loca</button>
     <p class="mando-estado" id="estado-cinta" aria-live="polite">Play</p>
   </div>
@@ -1053,8 +1054,6 @@ function marcarPausa(on) {
   /* Al reanudar se devuelve el control al movimiento normal de la pasarela */
   if (!on) { pista.style.animation = ""; pista.style.transform = ""; }
   pista.classList.toggle("pausada", on);
-  botonPausa.setAttribute("aria-pressed", on ? "true" : "false");
-  botonPausa.textContent = on ? "▶ Play" : "❚❚ Pausa";
 }
 
 function seleccionar(p, lomo, rapido) {
@@ -1115,13 +1114,13 @@ function cerrarSeleccion() {
 }
 
 botonPausa.addEventListener("click", () => {
-  const quedaPausada = !pista.classList.contains("pausada");
-  marcarPausa(quedaPausada);
-  if (quedaPausada) {
-    estadoCinta.textContent = "Pausa";
-  } else {
-    cerrarSeleccion();
-  }
+  marcarPausa(true);
+  estadoCinta.textContent = "Pausa";
+});
+
+$("play").addEventListener("click", () => {
+  marcarPausa(false);
+  cerrarSeleccion();
 });
 
 /* ===== La suerte es loca: la pasarela gira rápido y para en una cinta al azar ===== */
