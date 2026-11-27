@@ -459,6 +459,7 @@ dialog:focus-visible, .dlg-cerrar:focus-visible, .ampliar:focus-visible {
   <div class="mando">
     <p class="mando-marca">Video Club</p>
     <button type="button" class="mando-btn" id="pausa" aria-pressed="false">❚❚ Pausa</button>
+    <button type="button" class="mando-btn" id="suerte">La suerte es loca</button>
     <p class="mando-estado" id="estado-cinta" aria-live="polite">Play</p>
   </div>
   <div class="pasarela"><div class="pista" id="pista"></div></div>
@@ -1033,6 +1034,7 @@ function armarPista() {
       s.textContent = p.t;
       b.appendChild(s);
       /* Las dos copias responden al clic: la que se ve depende del momento del giro */
+      b.peli = p;
       b.addEventListener("click", () => seleccionar(p, b));
       if (copia) {
         b.tabIndex = -1;
@@ -1048,12 +1050,14 @@ function armarPista() {
 }
 
 function marcarPausa(on) {
+  /* Al reanudar se devuelve el control al movimiento normal de la pasarela */
+  if (!on) { pista.style.animation = ""; pista.style.transform = ""; }
   pista.classList.toggle("pausada", on);
   botonPausa.setAttribute("aria-pressed", on ? "true" : "false");
   botonPausa.textContent = on ? "▶ Play" : "❚❚ Pausa";
 }
 
-function seleccionar(p, lomo) {
+function seleccionar(p, lomo, rapido) {
   marcarPausa(true);
   estadoCinta.textContent = "Pausa · " + p.t;
   const cinta = crearCinta(p);
@@ -1091,7 +1095,7 @@ function seleccionar(p, lomo) {
       { transform: `translate(${r.left}px, ${r.top}px) scale(${sx}, ${sy})` },
       { transform: `translate(${r.left}px, ${r.top - 40}px) scale(${sx}, ${sy})`, offset: 0.3 },
       { transform: `translate(${f.left}px, ${f.top}px) scale(1, 1)` }
-    ], { duration: 850, easing: "cubic-bezier(.25,.7,.2,1)", fill: "forwards" });
+    ], { duration: rapido ? 450 : 850, easing: "cubic-bezier(.25,.7,.2,1)", fill: "forwards" });
   } catch (e) {
     /* Si la animación falla, la cinta queda visible igual */
     saque.remove();
@@ -1118,6 +1122,48 @@ botonPausa.addEventListener("click", () => {
   } else {
     cerrarSeleccion();
   }
+});
+
+/* ===== La suerte es loca: la pasarela gira rápido y para en una cinta al azar ===== */
+const botonSuerte = $("suerte");
+let girando = false;
+botonSuerte.addEventListener("click", () => {
+  if (girando) return;
+  const primeras = [...pista.children].slice(0, PELIS.length);
+  const lomo = primeras[Math.floor(Math.random() * primeras.length)];
+  const p = lomo.peli;
+  const sinMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (sinMovimiento || !pista.animate) { seleccionar(p, lomo); return; }
+
+  girando = true;
+  marcarPausa(true);
+  estadoCinta.textContent = "¡La suerte es loca!";
+  /* Se parte desde donde está la pasarela ahora */
+  const inicio = new DOMMatrix(getComputedStyle(pista).transform).m41;
+  pista.style.animation = "none";
+  pista.style.transform = "translateX(" + inicio + "px)";
+  const pr = pista.getBoundingClientRect();
+  const lr = lomo.getBoundingClientRect();
+  const pasarela = pista.parentElement.getBoundingClientRect();
+  const base = pr.left - inicio;           /* pista sin desplazar */
+  const ahora = lr.left - pr.left;         /* lugar del lomo dentro de la pista */
+  /* Desplazamiento que deja el lomo elegido justo en el centro */
+  const final = pasarela.left + pasarela.width / 2 - base - ahora - lr.width / 2;
+  /* La pista repite dos copias: se suman vueltas enteras para que gire bastante */
+  const media = pista.scrollWidth / 2;
+  let destino = final;
+  while (destino > inicio - media) destino -= media;
+  /* Frena de golpe al final, para que no quede esperando en cámara lenta */
+  const anim = pista.animate([
+    { transform: "translateX(" + inicio + "px)" },
+    { transform: "translateX(" + destino + "px)" }
+  ], { duration: 1800, easing: "cubic-bezier(.2,.6,.3,1)", fill: "forwards" });
+  anim.onfinish = () => {
+    pista.style.transform = "translateX(" + final + "px)";
+    anim.cancel();
+    girando = false;
+    seleccionar(p, lomo, true);
+  };
 });
 
 armarPista();
